@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<!-- HTML5 document type declaration -->
+<html lang="en">
+<!-- Root HTML element with English language setting -->
+
+<head>
+    <!-- Document metadata and resources -->
+    <meta charset="UTF-8"> <!-- Character encoding -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsive viewport -->
+    <title>eBay Product Scraper</title> <!-- Page title -->
+    <style>
+        /* CSS Reset and base styles */
+        * {
+            margin: 0;
+            /* Remove default margins */
+            padding: 0;
+            /* Remove default padding */
+            box-sizing: border-box;
+            /* Include padding/border in element width */
+        }
+
+        /* Body styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Font stack */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            /* Gradient background */
+            min-height: 100vh;
+            /* Minimum viewport height */
+            padding: 20px;
+            /* Padding around body */
+        }
+
+        /* Main container styles */
+        .container {
+            max-width: 1200px;
+            /* Maximum width */
+            margin: 0 auto;
+            /* Center container */
+            background: white;
+            /* White background */
+            border-radius: 15px;
+            /* Rounded corners */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            /* Shadow effect */
+            overflow: hidden;
+            /* Hide overflow */
+        }
+
+        /* Header section styles */
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            /* Header gradient */
+            color: white;
+            /* White text */
+            padding: 30px;
+            /* Padding */
+            text-align: center;
+            /* Center text */
+        }
+
+        /* Header title */
+        .header h1 {
+            font-size: 2.5em;
+            /* Large font size */
+            margin-bottom: 10px;
+            /* Bottom margin */
+        }
+
+        /* Header subtitle */
+        .header p {
+            font-size: 1.1em;
+            /* Slightly larger text */
+            opacity: 0.9;
+            /* Slightly transparent */
+        }
+
+        /* Main content grid layout */
+        .main-content {
+            display: grid;
+            /* CSS Grid layout */
+            grid-template-columns: 1fr 1fr;
+            /* Two equal columns */
+            gap: 30px;
+            /* Gap between columns */
+            padding: 30px;
+            /* Padding */
+        }
+
+        /* Control panel styles */
+        .control-panel {
+            background: #f8f9fa;
+            /* Light gray background */
+            padding: 25px;
+            /* Padding */
+            border-radius: 10px;
+            /* Rounded corners */
+            border: 1px solid #e9ecef;
+            /* Border */
+        }
+
+        /* Results panel styles */
+        .results-panel {
+            background: #f8f9fa;
+            /* Light gray background */
+            padding: 25px;
+            /* Padding */
+            border-radius: 10px;
+            /* Rounded corners */
+            border: 1px solid #e9ecef;
+            /* Border */
+        }
+
+        /* Form group spacing */
+        .form-group {
+            margin-bottom: 20px;
+            /* Bottom margin */
+        }
+
+        /* Label styles */
+        label {
+            display: block;
+            /* Block display */
+            margin-bottom: 8px;
+            /* Bottom margin */
+            font-weight: 600;
+            /* Semi-bold */
+            color: #333;
+            /* Dark gray */
+        }
+
+        /* Input and select styles */
+        input[type="text"],
+        input[type="number"],
+        input[type="path"],
+        select {
+            width: 100%;
+            /* Full width */
+            padding: 12px;
+            /* Padding */
+            border: 2px solid #e9ecef;
+            /* Border */
+            border-radius: 8px;
+            /* Rounded corners */
+            font-size: 16px;
+            /* Font size */
+            transition: border-color 0.3s;
+            /* Smooth transition */
+        }
+
+        /* Focus states */
+        input:focus,
+        select:focus {
+            outline: none;
+            /* Remove default outline */
+            border-color: #4facfe;
+            /* Blue border */
+        }
+
+        /* Checkbox group layout */
+        .checkbox-group {
+            display: flex;
+            /* Flex layout */
+            align-items: center;
+            /* Center vertically */
+            gap: 10px;
+            /* Space between items */
+        }
+
+        /* Checkbox sizing */
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            /* Natural width */
+            transform: scale(1.2);
+            /* Slightly larger */
+        }
+
+        /* Button base styles */
+        .btn {
+            padding: 12px 25px;
+            /* Padding */
+            border: none;
+            /* No border */
+            border-radius: 8px;
+            /* Rounded corners */
+            font-size: 16px;
+            /* Font size */
+            font-weight: 600;
+            /* Bold */
+            cursor: pointer;
+            /* Pointer cursor */
+            transition: all 0.3s;
+            /* Smooth transitions */
+            margin-right: 10px;
+            /* Right margin */
+            margin-bottom: 10px;
+            /* Bottom margin */
+        }
+
+        /* Primary button gradient */
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            /* Blue gradient */
+            color: white;
+            /* White text */
+        }
+
+        /* Secondary button */
+        .btn-secondary {
+            background: #6c757d;
+            /* Gray */
+            color: white;
+            /* White text */
+        }
+
+        /* Danger button */
+        .btn-danger {
+            background: #dc3545;
+            /* Red */
+            color: white;
+            /* White text */
+        }
+
+        /* Success button */
+        .btn-success {
+            background: #28a745;
+            /* Green */
+            color: white;
+            /* White text */
+        }
+
+        /* Button hover effects */
+        .btn:hover {
+            transform: translateY(-2px);
+            /* Lift up */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            /* Shadow */
+        }
+
+        /* Disabled button styles */
+        .btn:disabled {
+            opacity: 0.6;
+            /* Semi-transparent */
+            cursor: not-allowed;
+            /* No pointer */
+            transform: none;
+            /* No transform */
+        }
+
+        /* Status bar styles */
+        .status-bar {
+            background: #e9ecef;
+            /* Light gray */
+            padding: 15px;
+            /* Padding */
+            border-radius: 8px;
+            /* Rounded corners */
+            margin-bottom: 20px;
+            /* Bottom margin */
+        }
+
+        /* Progress bar container */
+        .progress-bar {
+            width: 100%;
+            /* Full width */
+            height: 20px;
+            /* Fixed height */
+            background: #e9ecef;
+            /* Light gray */
+            border-radius: 10px;
+            /* Rounded corners */
+            overflow: hidden;
+            /* Hide overflow */
+            margin: 10px 0;
+            /* Vertical margin */
+        }
+
+        /* Progress fill element */
+        .progress-fill {
+            height: 100%;
+            /* Full height */
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            /* Gradient */
+            width: 0%;
+            /* Initial width */
+            transition: width 0.3s;
+            /* Smooth transition */
+        }
+
+        /* Results area styles */
+        .results-area {
+            background: white;
+            /* White background */
+            border: 2px solid #e9ecef;
+            /* Border */
+            border-radius: 8px;
+            /* Rounded corners */
+            padding: 20px;
+            /* Padding */
+            max-height: 400px;
+            /* Maximum height */
+            overflow-y: auto;
+            /* Vertical scroll */
+        }
+
+        /* Individual result item */
+        .result-item {
+            background: #f8f9fa;
+            /* Light gray */
+            padding: 15px;
+            /* Padding */
+            margin-bottom: 15px;
+            /* Bottom margin */
+            border-radius: 8px;
+            /* Rounded corners */
+            border-left: 4px solid #4facfe;
+            /* Left accent border */
+        }
+
+        /* Result title */
+        .result-item h4 {
+            color: #333;
+            /* Dark gray */
+            margin-bottom: 8px;
+            /* Bottom margin */
+        }
+
+        /* Result text */
+        .result-item p {
+            color: #666;
+            /* Medium gray */
+            margin-bottom: 5px;
+            /* Bottom margin */
+        }
+
+        /* Alert base styles */
+        .alert {
+            padding: 15px;
+            /* Padding */
+            border-radius: 8px;
+            /* Rounded corners */
+            margin-bottom: 20px;
+            /* Bottom margin */
+        }
+
+        /* Info alert */
+        .alert-info {
+            background: #d1ecf1;
+            /* Light blue */
+            border: 1px solid #b6d4ea;
+            /* Border */
+            color: #0c5460;
+            /* Dark blue */
+        }
+
+        /* Success alert */
+        .alert-success {
+            background: #d4edda;
+            /* Light green */
+            border: 1px solid #c3e6cb;
+            /* Border */
+            color: #155724;
+            /* Dark green */
+        }
+
+        /* Warning alert */
+        .alert-warning {
+            background: #fff3cd;
+            /* Light yellow */
+            border: 1px solid #ffeaa7;
+            /* Border */
+            color: #856404;
+            /* Dark yellow */
+        }
+
+        /* Danger alert */
+        .alert-danger {
+            background: #f8d7da;
+            /* Light red */
+            border: 1px solid #f5c6cb;
+            /* Border */
+            color: #721c24;
+            /* Dark red */
+        }
+
+        /* File list container */
+        .file-list {
+            background: white;
+            /* White background */
+            border: 1px solid #e9ecef;
+            /* Border */
+            border-radius: 8px;
+            /* Rounded corners */
+            padding: 15px;
+            /* Padding */
+            margin-top: 15px;
+            /* Top margin */
+        }
+
+        /* File item layout */
+        .file-item {
+            display: flex;
+            /* Flex layout */
+            justify-content: space-between;
+            /* Space between items */
+            align-items: center;
+            /* Center vertically */
+            padding: 10px;
+            /* Padding */
+            border-bottom: 1px solid #e9ecef;
+            /* Bottom border */
+        }
+
+        /* Remove border from last item */
+        .file-item:last-child {
+            border-bottom: none;
+            /* No border */
+        }
+
+        /* Responsive styles for smaller screens */
+        @media (max-width: 768px) {
+
+            /* Single column layout on mobile */
+            .main-content {
+                grid-template-columns: 1fr;
+                /* Single column */
+            }
+
+            /* Smaller header on mobile */
+            .header h1 {
+                font-size: 2em;
+                /* Smaller font */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Main container -->
+    <div class="container">
+        <!-- Header section -->
+        <div class="header">
+            <h1>🛒 eBay Product Scraper</h1> <!-- Title with emoji -->
+            <p>Extract detailed product information from eBay listings with advanced CAPTCHA handling</p>
+            <p>📁 Exported files will be saved to your system's Downloads folder automatically.</p>
+        </div>
+
+        <!-- Main content area -->
+        <div class="main-content">
+            <!-- Left panel - controls -->
+            <div class="control-panel">
+                <h2>Scraping Configuration</h2> <!-- Panel title -->
+
+                <!-- Scraping form  <form id="scrapeForm"> -->
+                <form method="POST" action="/">
+                    <!-- Search query input -->
+                    <div class="form-group">
+                        <label for="searchQuery">Search Query *</label>
+                        <input type="text" id="searchQuery" name="searchQuery"
+                            placeholder="e.g., vintage watches, iPhone 14, collectible coins" required>
+                    </div>
+
+                    <!-- Pages input -->
+                    <div class="form-group">
+                        <label for="pages">Number of Pages</label>
+                        <input type="number" id="pages" name="pages" value="1" min="1" max="20">
+                    </div>
+
+                    <!-- Max items input -->
+                    <div class="form-group">
+                        <label for="maxItems">Max Items (Optional)</label>
+                        <input type="number" id="maxItems" name="maxItems" placeholder="Leave empty for no limit"
+                            min="1">
+                    </div>
+
+                    <!-- Action buttons -->
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" onclick="startScraping()">
+                            🚀 Start Scraping
+                        </button>
+                        <button type="button" class="btn btn-danger" onclick="stopScraping()" disabled id="stopBtn">
+                            ⏹️ Stop
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Status display -->
+                <div class="status-bar" id="statusBar" style="display: none;">
+                    <div>Status: <span id="currentStatus">Ready</span></div>
+                    <div>Current Item: <span id="currentItem">-</span></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div>Progress: <span id="progressText">0/0</span></div>
+                </div>
+            </div>
+
+            <!-- Right panel - results -->
+            <div class="results-panel">
+                <h2>Results & Export</h2> <!-- Panel title -->
+
+                <!-- Alert display area -->
+                <div id="alertArea"></div>
+
+                <!-- Export format selector -->
+                <div class="form-group">
+                    <label for="exportFormat">Export Format</label>
+                    <select id="exportFormat">
+                        <option value="both">CSV + JSON</option>
+                        <option value="csv">CSV Only</option>
+                        <option value="json">JSON Only</option>
+                    </select>
+                </div>
+
+                <!-- Export button -->
+                <div class="form-group">
+                    <button type="button" class="btn btn-success" onclick="exportData()" disabled id="exportBtn">
+                        📥 Export Data
+                    </button>
+                </div>
+
+                <!-- Results display area -->
+                <div class="results-area" id="resultsArea">
+                    <p style="text-align: center; color: #666; padding: 40px;">
+                        🔍 No data scraped yet. Start a scraping session to see results here.
+                    </p>
+                </div>
+
+                <!-- Exported files list -->
+                <div class="file-list" id="fileList" style="display: none;">
+                    <h4>Exported Files</h4>
+                    <div id="exportedFiles"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript functionality -->
+    <script>
+        // Global variables
+        let scrapingInterval; // Interval for status updates
+        let currentResults = []; // Store scraped results
+
+        // Show alert message
+        function showAlert(message, type = 'info') {
+            const alertArea = document.getElementById('alertArea');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alertArea.appendChild(alert);
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // ... existing script ...
+
+        // Update status display function
+        function updateStatus() {
+            fetch('/api/status')
+                .then(response => {
+                    if (!response.ok) throw new Error('Network error');
+                    return response.json();
+                })
+                .then(data => {
+                    // ... existing code ...
+
+                    // FIXED: Proper progress calculation
+                    const total = data.total_items || 1;
+                    const completed = data.completed_items || 0;
+                    const progressPercent = Math.min(100, Math.round((completed / total) * 100));
+
+                    document.getElementById('progressFill').style.width = `${progressPercent}%`;
+                    document.getElementById('progressText').textContent = `${completed}/${total}`;
+
+                    // FIXED: Always update results if available
+                    console.log("🔍 updateStatus(): results =", data.results);
+
+                    if (Array.isArray(data.results)) {
+                        console.log("✅ Found", data.results.length, "results");
+
+                        if (data.results.length > 0) {
+                            currentResults = data.results;
+                            displayResults(data.results);
+                            document.getElementById('exportBtn').disabled = false;
+                            console.log("📦 displayResults() called. Export enabled.");
+                        } else {
+                            console.log("⚠️ No results found.");
+                        }
+                    } else {
+                        console.log("❌ data.results is not an array");
+                    }
+
+                })
+                .catch(error => {
+                    console.error('Status update failed:', error);
+                    showAlert('Failed to get status updates', 'danger');
+                    enableControls();
+                    clearInterval(scrapingInterval);
+                });
+        }
+        // Start scraping process
+        function startScraping() {
+            // Get form data
+            const formData = {
+                search_query: document.getElementById('searchQuery').value,
+                pages: parseInt(document.getElementById('pages').value),
+                max_items: document.getElementById('maxItems').value ?
+                    parseInt(document.getElementById('maxItems').value) : null,
+            };
+
+            // Validate search query
+            if (!formData.search_query.trim()) {
+                showAlert('Please enter a search query', 'warning');
+                return;
+            }
+
+            // Disable controls and show status
+            disableControls();
+            showAlert('Starting scraping session...', 'info');
+
+            // Send request to API
+            fetch('/api/scrape', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        showAlert(data.error, 'danger');
+                        enableControls();
+                    } else {
+                        showAlert('Scraping started successfully!', 'success');
+                        // Start polling for status updates
+                        scrapingInterval = setInterval(updateStatus, 2000);
+                    }
+                })
+                .catch(error => {
+                    showAlert('Error starting scraping: ' + error.message, 'danger');
+                    enableControls();
+                });
+        }
+
+
+        // Stop running scraping process
+        function stopScraping() {
+            // Send stop request to API
+            fetch('/api/stop', {
+                method: 'POST'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    showAlert('Scraping stopped', 'warning');
+                    clearInterval(scrapingInterval);
+                    enableControls();
+                })
+                .catch(error => {
+                    showAlert('Error stopping scraping: ' + error.message, 'danger');
+                });
+        }
+
+        // Export scraped data
+        function exportData() {
+            //const outputPath = document.getElementById('outputPath').value;
+            const format = document.getElementById('exportFormat').value;
+
+            console.log("📤 Export initiated");
+            //console.log("📂 Output path:", outputPath);
+            console.log("📄 Format:", format);
+
+            // Send export request to API
+            fetch('/api/export', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    //output_path: outputPath,
+                    format: format
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        showAlert(data.error, 'danger');
+                    } else {
+                        showAlert(data.message, 'success');
+                        // Display exported files if available
+                        displayExportedFiles(data.files);
+                    }
+                })
+                .catch(error => {
+                    showAlert('Export error: ' + error.message, 'danger');
+                });
+        }
+
+        // Display scraped results
+        function displayResults(results) {
+            const resultsArea = document.getElementById('resultsArea');
+
+            // Handle empty results
+            if (!Array.isArray(results) || results.length === 0) {
+                resultsArea.innerHTML = '<p style="text-align: center; color: #666;">No results found.</p>';
+                return;
+            }
+
+            // Generate safe HTML for each result
+            resultsArea.innerHTML = results.map(item => {
+                const title = item.title || 'No title';
+                const price = item.price || 'N/A';
+                const condition = item.condition || 'N/A';
+                const quantity = item.quantity_sold !== undefined && item.quantity_sold !== null ? item.quantity_sold : 'N/A';
+                const url = item.listing_url || '#';
+
+                return `
+                    <div class="result-item">
+                        <h4>${title}</h4>
+                        <p><strong>Price:</strong> ${price}</p>
+                        <p><strong>Condition:</strong> ${condition}</p>
+                        <p><strong>Quantity Sold:</strong> ${quantity}</p>
+                        <p><strong>URL:</strong> <a href="${url}" target="_blank">View on eBay</a></p>
+                    </div>
+                `;
+            }).join('');
+
+            // ✅ Enable Export button
+            document.getElementById('exportBtn').disabled = false;
+        }
+
+
+        // Display list of exported files
+        function displayExportedFiles(files) {
+            const fileList = document.getElementById('fileList');
+            const exportedFiles = document.getElementById('exportedFiles');
+
+            if (files && files.length > 0) {
+                fileList.style.display = 'block';
+
+                // Generate HTML for each file
+                exportedFiles.innerHTML = files.map(file => {
+                    const filename = file.split(/[\\/]/).pop();  // Handles both \ and /
+                    return `
+                        <div class="file-item">
+                            <span>${filename}</span>
+                            <a href="/api/download/${encodeURIComponent(filename)}" class="btn btn-secondary" style="padding: 5px 10px; font-size: 14px;">Download</a>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+
+        // Disable form controls during scraping
+        function disableControls() {
+            document.querySelector('button[onclick="startScraping()"]').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+        }
+
+        // Enable form controls
+        function enableControls() {
+            document.querySelector('button[onclick="startScraping()"]').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function () {
+            showAlert('eBay Scraper ready! Enter your search query to begin.', 'info');
+        });
+    </script>
+</body>
+
+</html>
